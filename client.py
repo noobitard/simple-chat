@@ -10,20 +10,21 @@ def recvMessage(sock):
         try:
             data = readSocks[0].recv(1024)
             if data:
-                sys.stdout.write(data)
+                sys.stdout.write(data.decode('utf-8'))
                 prompt()
         except:
-            print '\nDisconnected from chat server'
+            print('\nDisconnected from chat server')
             os._exit(1)
         
 def sendMessage(sock):
     while 1:
         msg = sys.stdin.readline()
         try:
-            s.send(msg)
+            sock.send(msg.encode('utf-8'))
             prompt()
         except:
-            print "\nDisconnected from chat server"
+            print('Error send')
+            print("\nDisconnected from chat server")
             os._exit(1)
 
 if __name__ == "__main__":
@@ -37,10 +38,10 @@ if __name__ == "__main__":
     try :
         s.connect((host, port))
     except :
-        print 'Unable to connect'
+        print('Unable to connect')
         os._exit(1)
      
-    print 'Connected to remote host. Start sending messages'
+    print('Connected to remote host. Start sending messages')
     prompt()
     threading.Thread(target=recvMessage, args=(s,)).start()
     threading.Thread(target=sendMessage, args=(s,)).start()

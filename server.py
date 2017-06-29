@@ -4,7 +4,7 @@ def broadcastMessage(sock, message):
     for socket in connectionList:
         if socket != serverSocket and socket != sock:
             try:
-                socket.send(message)
+                socket.send(message.encode('utf-8'))
             except:
                 socket.close()
                 connectionList.remove(socket)
@@ -22,7 +22,7 @@ if __name__ == '__main__':
 
     connectionList.append(serverSocket)
 
-    print "Chat server started on port " + str(port)
+    print("Chat server started on port " + str(port))
 
     while 1:
         readSockets, writeSockets, errorSockets = select.select(connectionList, [], [])
@@ -30,17 +30,18 @@ if __name__ == '__main__':
             if sock == serverSocket:
                 sockfd, addr = serverSocket.accept()
                 connectionList.append(sockfd)
-                print "Client (%s, %s) connected\n" % addr
+                print("Client (%s, %s) connected\n" % addr)
 
                 broadcastMessage(sockfd, "(%s:%s) entered room \n"%addr)
             else:
                 try:
                     data = sock.recv(recvBuff)
                     if data:
+                        data = data.decode('utf-8')
                         broadcastMessage(sock, "\r" + '<' + str(sock.getpeername()) + '> ' + data)
                 except:
                     broadcastMessage(sock, "Client (%s, %s) is offline\n" % addr)
-                    print "Client (%s, %s) is offline" % addr
+                    print("Client (%s, %s) is offline" % addr)
                     sock.close()
                     connectionList.remove(sock)
                     continue
